@@ -57,7 +57,7 @@
                 . '3) !longman, 查詢朗文英中字典, 可用 help longman 看詳細說明' . "\n\n"
                 . '4) !weather, 查詢天氣, 可用 help weather 看詳細說明' . "\n\n"
                 . '5) !goo, 查詢 Google, 可用 help google 看詳細說明' . "\n\n"
-                . '6) !date, 顯示日期時間' . "\n";
+                . '6) !date, 顯示日期時間' . "\n\n"
                 . '7) !music, 隨機歌曲' . "\n";
     } else {
         switch($args[0]) {
