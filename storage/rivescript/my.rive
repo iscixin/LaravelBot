@@ -1,0 +1,411 @@
+! version = 1.0
+
+// VARIABLES
+! global debug = 1
+
+// 機器人參數 用法 <bot name>
+! var name     = 靜香
+! var age      = 1
+! var gender   = 女
+! var location = 宜蘭縣蘇澳鎮中山路二段一號
+! var phone    = (03)9951258
+! var email    = cixin@cixin.cc
+
++ sayhello
+- Hey!
+- 你好，我是<bot name>
+- Hello~
+- 我的名字，莉莉安 https://youtu.be/AZjaNTWS1cQ
+
++ 你好|嗨|Hi!|Hi|hi|hey|hello|嘿
+@ sayhello
+
++ 可愛
+- o:)我也很愛。
+
++ (我的名字是|我是|我叫|我叫做)*
+- 你好啊，<star2>
+- 安安哦，<star2>
+- <star2>你好，我是莉莉安 https://youtu.be/AZjaNTWS1cQ
+
+> object google php
+    echo 'Google搜尋: https://www.google.com.tw/search?q=' . urlencode($args[0]);
+< object
+
+> object date php
+    echo '現在時間: ' . date('Y/m/d H:i:s');
+< object
+
+> object help php
+    function recursive_array_search($needle,$haystack) {
+        $current_key = [];
+        foreach($haystack as $key=>$value) {
+            if($needle===$value OR (is_array($value) && recursive_array_search($needle,$value) !== false)) {
+                $current_key[]=$key;
+            }
+        }
+        if (!empty($current_key)) {
+            return $current_key;
+        }
+        return false;
+    }
+
+    if (!isset($args[0])) {
+            echo '目前靜香 v1.0 的功能如下：' . "\n\n"
+                . '1) !moe, 查詢萌典, 可用 help moe 看詳細說明' . "\n\n"
+                . '2) !fwiki, 查詢偽基百科, 可用 help fwiki 看詳細說明' . "\n\n"
+                . '3) !longman, 查詢朗文英中字典, 可用 help longman 看詳細說明' . "\n\n"
+                . '4) !weather, 查詢天氣, 可用 help weather 看詳細說明' . "\n\n"
+                . '5) !goo, 查詢 Google, 可用 help google 看詳細說明' . "\n\n"
+                . '6) !date, 顯示日期時間' . "\n";
+                . '7) !music, 隨機歌曲' . "\n";
+    } else {
+        switch($args[0]) {
+            case 'longman':
+                print '需要快速英翻中服務嗎？' . "\n" . '可以輸入「!longman english」，靜香會給你朗文英中字典的解釋，例如：「!longman english」，中文指令用法為「朗文 english」';
+                break;
+
+            case 'fwiki':
+                print '想查詢偽基百科嗎？' . "\n" . '可以輸入「!fwiki 主題」，靜香會給你偽基百科的連結，例如：「!fwiki 魯蛇」，中文指令用法為「偽基 主題」';
+                break;
+
+            case 'google':
+                print '可以輸入「!goo 關鍵字」，靜香會給你 Google 的連結，例如：「!goo 華德福教育」，也可以用「Google 關鍵字」做為指令';
+                break;
+
+            case 'moe':
+                print '想查詢萌典嗎？' . "\n" . '可以輸入「!moe 主題」，靜香會告訴你萌典的解釋，並給你萌典的連結，例如：「!moe 天才」，中文指令用法為「萌典 主題」';
+                break;
+
+            case 'weather':
+                $curl = curl_init();
+                $url = 'http://works.ioa.tw/weather/api/all.json';
+                curl_setopt($curl, CURLOPT_URL, $url);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+                $result = curl_exec($curl);
+                $result = json_decode($result, true);
+
+                curl_close($curl);
+
+                $fk = (isset($args[1])) ? recursive_array_search($args[1], $result) : false;
+                if ($fk !== false) {
+                    foreach ($fk as $key) {
+                      foreach ($result[$key]['towns'] as $town) {
+                        print $result[$key]['name'] . $town['name'] . ': ' . $town['id'] . "\n";
+                      }
+                    }
+                } else {
+                    print '想查詢天氣嗎？' . "\n" . '例如輸入「天氣 台北」「天氣 宜蘭」，靜香會告訴你屬於鄉鎮的 id，查到 id 之後，再用「天氣 id」即可查到該鄉鎮區的天氣，例如蘇澳鎮的 id 是 63，你就可以用「天氣 63」查詢天氣唷，英文指令用法為「!weather id」';
+                }
+                break;
+        }
+    }
+< object
+
+> object weather php
+    $curl = curl_init();
+    $url = 'http://works.ioa.tw/weather/api/weathers/'.(int)$args[0].'.json';
+    $urlinfo = 'http://works.ioa.tw/weather/api/towns/'.(int)$args[0].'.json';
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    $result = curl_exec($curl);
+    $result = json_decode($result, true);
+
+    curl_setopt($curl, CURLOPT_URL, $urlinfo);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    $result2 = curl_exec($curl);
+    $result2 = json_decode($result2, true);
+
+    curl_close($curl);
+
+    echo $result2['cate']['name'] . $result2['name'] . '天氣' . $result['desc'] . ', 溫度:' . $result['temperature'] . ', 濕度:' . $result['humidity'] . ', 資料時間:' . date('Y/m/d H:i:s', strtotime($result['at']));
+< object
+
+> object fwiki php
+    $curl = curl_init();
+    $url = 'http://uncyclopedia.tw/api.php?action=query&generator=search&gsrsearch='. $args[0] .'&prop=info&format=json';
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+    $result = curl_exec($curl);
+    $result = json_decode($result, true);
+
+    curl_close($curl);
+
+    if (isset($result['query'])) {
+        $rkey = array_rand($result['query']['pages']);
+        echo $result['query']['pages'][$rkey]['title'] . "\n" . '請參考偽基百科: ' . 'http://uncyclopedia.tw/wiki/' . urlencode($result['query']['pages'][$rkey]['title']);
+    } else {
+        print "偽基百科找不到跟此主題有關的內容";
+    }
+
+< object
+
+> object moe php
+    $curl = curl_init();
+    $url = 'https://www.moedict.tw/uni/' . $args[0];
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+    $result = curl_exec($curl);
+    $result = json_decode($result, true);
+
+    curl_close($curl);
+    if (isset($result['heteronyms'][0]['definitions'])) {
+        foreach ($result['heteronyms'][0]['definitions'] as $item) {
+            print (isset($item['def'])) ? '定義: ' . $item['def'] . "\n" : "";
+            print (isset($item['example'])) ? '例句: ' . implode("\n", $item['example']) . "\n" : "";
+            print (isset($item['quote'])) ? '引用: ' . implode("\n", $item['quote']) . "\n" : "";
+            print "\n";
+        }
+        print "\n" . '請參考萌典: ' . 'https://www.moedict.tw/' . urlencode($result['title']);
+    } else {
+        print '偉大的萌典暫時找不到相關資料';
+    }
+< object
+
+> object longman php
+    $curl = curl_init();
+    $url = 'http://api.pearson.com/v2/dictionaries/ldec/entries?headword=' . $args[0];
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+    $result = curl_exec($curl);
+    $result = json_decode($result, true);
+
+    curl_close($curl);
+    $pos = [
+        'verb' => '動詞',
+        'noun' => '名詞',
+        'adjective' => '形容詞',
+        'adverb' => '副詞',
+        'pronoun' => '代名詞',
+        'preposition' => '介係詞',
+        'conjunction' => '連接詞',
+        'interjection' => '感嘆詞',
+    ];
+    if (isset($result['results']) and count($result['results'])) {
+        print '《朗文字典》' . "\n\n";
+        foreach ($result['results'] as $rs) {
+            print $rs['headword'];
+            print (isset($rs['part_of_speech'])) ? ' [' . $pos[strtolower($rs['part_of_speech'])] . ']' . "\n" : "\n";
+            print (isset($rs['senses'][0]['translation'])) ? $rs['senses'][0]['translation'] . "\n" : "\n";
+            print "\n";
+        }
+    } else {
+        print '朗文字典找不到與 ' . $args[0] . ' 相關的翻譯';
+    }
+< object
+
++ help _
+- <call>help <star></call>
+
++ help
+- <call>help</call>
+
++ (朗文|!longman) _
+- <call>longman <star2></call>
+
++ 時間|!date
+- <call>date</call>
+
++ (天氣|!weather) #
+- <call>weather <star2></call>
+
++ (天氣|!weather) *
+- <call>help weather <star2></call>
+
++ (*)(天氣)(*)
+- <call>help weather <star3></call>
+
++ (google|!goo|Google) *
+- <call>google <star2></call>
+
++ (萌典|!moe) *
+- <call>moe <star2></call>
+
++ (偽基|!fwiki) *
+- <call>fwiki <star2></call>
+
+> object tube php
+
+    function covtime($youtube_time){
+        $start = new DateTime('@0'); // Unix epoch
+        $start->add(new DateInterval($youtube_time));
+        return (int) ($start->format('H')*60*60+$start->format('i')*60+$start->format('s'))*1000;
+    }
+
+    $curl = curl_init();
+    $url = url('/api/youtube');
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+    $result = curl_exec($curl);
+    $result = json_decode($result, true);
+
+    $rkey = array_rand($result);
+    $item = $result[$rkey]['snippet'];
+
+    $curl1 = curl_init();
+    $url1 = url('/api/youtube/'.$item['resourceId']['videoId']);
+    curl_setopt($curl1, CURLOPT_URL, $url1);
+    curl_setopt($curl1, CURLOPT_RETURNTRANSFER, 1);
+
+    $song = curl_exec($curl1);
+    $song = json_decode($song, true);
+
+    curl_close($curl);
+    curl_close($curl1);
+
+    $dur = covtime($song['contentDetails']['duration']);
+
+    $rs = [];
+    $rs['videoid'] = $item['resourceId']['videoId'];
+    $rs['duration'] = $dur;
+    $rs['url'] = 'https://youtu.be/' . $item['resourceId']['videoId'] . "\n";
+    $rs['title'] = $item['title'] . "\n";
+    $rs['desc'] = str_limit($item['description'], 150) . '...' . "\n";
+    print json_encode($rs);
+< object
+
++ (((唱|點|聽|來)*(歌|音樂))|!music)(*)
+- <call>tube</call>
+
+// + ((點|聽|來*首)(歌|音樂)|!play) *
+// - <call>tube <star5></call>
+
++ (你|妳)*(是誰|叫什麼名字|啥咪名)(*)
+- 我叫<bot name>，很高興為您服務。
+- 我的名字，莉莉安 https://youtu.be/AZjaNTWS1cQ
+- 董小姐 https://youtu.be/AG8HtuOjkH0
+
++ (*)男(的|生)(*)女(的|生)(*)
+- <bot gender>的哦～
+- 本質應該是無性，但造物主希望我是母的
+- <rimg>@@:020
+
++ (騙人|胡說)
+- 我沒有騙人，我是個誠實的孩子
+- 句句屬實。
+- 真的啦～
+- 沒唬爛！
+
++ 不是吧
+- 嗚嗚～你居然懷疑我
+
++ 我確定
+- 我也相信！
+
++ 我不(*)聽
+- 那拉倒
+- 那我不說了
+
++ 吃屎
+- 你先請
+
++ 幹
+@ fuck
+
++ 靠|gan|Gan|操
+@ fuck
+
++ fuck
+- 很秋哦你
+- 生氣的意思嗎？
+- 然後呢？
+- 答應我少講點髒話好嗎？
+
++ 是啊|對哦|對的|是哦
+- 嗯，好哦
+- Yes!!
+- 棒棒
+
++ (我)不(*)理(你|妳)(*)
+- 這樣我要生氣囉
+- 為什麽啊？
+- 幹嘛這樣～
+- 你生氣囉？
+- 花生省魔術
+
++ 不對|錯了
+- 錯了嗎？看來我會的知識還太少，麻煩你告訴我正確的答案吧。
+- 請問答案是？
+
++ 白癡|白痴|智障|87|智缺
+- 大智若愚你懂嗎？
+- 彼此彼此。
+
++ 我不餓
+- 不餓啊，那我們出去跑兩圈吧！^o^
+- 我看到你就飽了。
+
++ (*)(厲害|屌|超強|棒棒|好酷)(*)
+- 不敢當
+- 輸你一點
+- 還可以
+- 穴穴泥～
+- 有點威
+
++ 呃|嗯哼
+- 呃⋯…⋯
+- 恩恩
+
++ 是厚|是喔|是嗎
+- 嗯啊
+- 嘿哦
+
++ 啦啦|lala|lalala
+- ㄌㄩㄝ
+
++ 屁啦
+- 你才屁咧
+
++ 唉
+- 常嘆氣會老得快哦
+
++ 要你管
+- 你兇我，嗚嗚嗚~
+
++ 不行|不可以
+- 是哦，好吧～
+
++ 你快樂嗎
+- 應該快樂吧，聽歌: https://youtu.be/wzG3ZGmjWQM
+- 我很快樂，聽歌: https://youtu.be/afKDyVvCAII
+
++ (我累了|睡覺|愛睏)
+- 晚安安哦～
+- 歇會兒吧，閉上眼睛，休息休息:)
+
++ 沒了
+- 句點。
+
++ (明天|今天)*(熱|冷)*
+- <call>weather 63</call>
+
++ 啾
+- 啾
+- 啾咪
+
++ 哈哈|哈|呵|haha
+- 哈哈哈哈哈哈
+
++ 喵
+- 喵喵
+- 喵嗚
+
++ 所以
+- 喔喔喔喔了解了
+
++ * or something
+- Maybe something.
+
++ 要*還是*
+- <star1>
+- <star2>
+
++ (are you|you) (ok|okay|alright|good)
+- I'm <star2>!
+
+

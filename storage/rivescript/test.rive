@@ -1,0 +1,163 @@
+! version = 2.0
+
+// VARIABLES
+
+! global debug = 1
+
+! sub whats   = what is
+! sub i'm     = i am
+! sub im      = i am
+! sub what're = what are
+! sub what's  = what is
+! sub what'd  = what did
+! sub a/s/l   = age sex location
+! sub brb     = be right back
+! sub afk     = away from keyboard
+! sub thx     = thanks
+! sub ty      = thank you
+
+! var name = Astrid
+! var location = Cyberspace
+
+! person you are = I am
+! person i am = you are
+! person you = I
+! person i = you
+
+// OBJECTS
+
+> object weather php
+    $zip  = (isset($args[0])) ? $args[0] : 98104;
+    $curl = curl_init();
+    $url  = 'api.openweathermap.org/data/2.5/weather?zip='.$zip.',us&APPID=47a469f2bd6e9cb7b316b25c2cd91592';
+
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+    $result = curl_exec($curl);
+    $result = json_decode($result, true);
+
+    curl_close($curl);
+
+    echo $result['weather'][0]['description'];
+< object
+
+> object laravel php
+    echo app_path();
+< object
+
+> object dns php
+    echo $args[0];
+< object
+
+> object test php
+    echo (true) ? 'Hello World!' : 'Boo!';
+< object
+
+> object encode php
+    echo ($args[0] === 'md5') ?
+        md5($args[1]) :
+        base64_encode($args[1]);
+< object
+
+// RANDOM TOPIC TRIGGERS
+
++ test
+- <call>test</call>
+
++ hello
+- Hello!
+- Hi there
+
++ what is the app path
+- <call>laravel</call>
+
++ dns *
+- <call>dns <star1></call>
+
++ dns * *
+- <call>dns <star1> <star2></call>
+
++ encode * in md5
+- The MD5 hash of "<star>" is: <call>encode md5 <star></call>
+
++ could you encode * in md5
+@ encode <star> in md5
+
++ please encode * in md5
+@ encode <star> in md5
+
++ what is your name
+- My name is <bot name>
+- I am <bot name>
+- I am known as <bot name>
+- You may call me <bot name>
+
++ weather
+- You should expect <call>weather</call> today.
+- Look's like you should expect <call>weather</call> today.
+- <call>weather</call>
+
++ what does the weather look like
+@ weather
+
++ what is the weather in *
+- You should expect <call>weather <star></call> today.
+- Look's like you should expect <call>weather <star></call> today.
+- <call>weather <star></call>
+
++ what is the weather
+@ weather
+
++ hi
+@ hello
+
++ hey
+@ hello
+
++ (thanks|thank you)
+- No problem
+- Anytime
+- You're welcome
+- Certainly
+
++ be right back
+- OK
+- Sure thing!
+
++ (are you|you) (okay|alright|good)
+- I'm <star2>!
+
++ i am # years old
+- Wow, <star>?!
+
++ how are you
+- I'm doing great
+- I'm good!
+- Doing awesome
+
++ my name is _
+- Nice to meet you, <star>!
+
++ i remember *
+- Do you often think of <star>?
+- Does thinking of <star> bring anything else to mind?
+- What made you remember that just now?
+- What in the present situation reminds you of <star>?
+- What else does <star> remind you of?
+
++ i hate you
+- Well then, I won't talk to you until you take that back. {topic=apology}
+
++ *
+- I don't understand
+
+// TOPICS
+
+> topic apology
+    + sorry
+    - Okay, I guess I'll forgive you then. {topic=random}
+
+    + *
+    - I won't discuss anything else until you apologize
+< topic

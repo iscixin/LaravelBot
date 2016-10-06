@@ -1,0 +1,82 @@
+// 替換規則
+! sub whats   = what is
+! sub i'm     = i am
+! sub im      = i am
+//! sub what're = what are
+//! sub what's  = what is
+//! sub what'd  = what did
+//! sub a/s/l   = age sex location
+//! sub brb     = be right back
+//! sub afk     = away from keyboard
+! sub thx     = thanks
+! sub ty      = thank you
+! sub +         = plus
+
+// 人稱替換
+//! person you are = I am
+//! person i am = you are
+//! person you = I
+//! person i = you
+! person 俺    = 我
+
+// > begin
+//    + request
+//    - {ok}
+// < begin
+
+// 數組 用法
+//  + 你有一件@colors衣服
+//  + 不錯
+//! array colors = 紅色 紅 綠色 綠 橙色 橙 黃色 黃 白色 白 黑色 黑
+//  ^ 青色 青 藍色 藍 紫色 紫
+
+// + 我剛[*]說了什麽
+// * <input> != undefined => 你說了:"<input>"
+// - 你沒說話呀，不要唬弄我！
+
+// + 我*歲[*]
+// * <star> >= 18 => 那你成年了呀
+// - 還是小屁孩呀
+
+//+ [*]自動監控[*]
+//* <get bindstate> == 未綁定 => {@綁定企業}
+//- 最近24小時您的企業自動監控數據顯示<get bindstate>正常，<get openid>無超標情況，COD最大值67.20，平均值45.45。（數據僅供參考）
+
+// > topic drawpic
+//
+// < topic
+
+//+ [*]可用水量[*]
+//* <get bindstate> == 未綁定 => {@綁定企業}
+//- 你需要查詢哪座城市{topic=water}
+
+//+ 綁定企業
+//- 請先<a href="<bot baseurl>/bind?openid=<get openid>">點擊綁定</a>帳號
+
+//> topic water
+//    + *
+//    % 你需要查詢哪座城市
+//    - <star>截止至2014年8月14日，根據IC卡總量控制系統顯示，您企業的可排放水量為2801.00噸，余量為12003.00噸。（數據僅供參考）
+
+//    + [*]再查[*]
+//    - 你需要查詢哪座城市
+
+//    + *
+//    - 我查累了,要不我們聊聊別的話題{weight=1}
+//    - 要不再查{weight=1}
+
+//    + [*]好[*]
+//    % 要不再查
+//    @ 再查
+
+//    + [*]不想[*]
+//    % 要不再查
+//    - 那我們聊點別的{topic=random}
+
+//    + [*]好[*]
+//    % [*]要不我們聊聊別的話題
+//    - 那你想聊什麽呢？{topic=random}
+//< topic
+
+//+ [*]ic卡[*]
+//- 截止至2014年8月14日，根據IC卡總量控制系統顯示，您企業的可排放水量為2801.00噸，餘量為12003.00噸。（數據僅供參考）
