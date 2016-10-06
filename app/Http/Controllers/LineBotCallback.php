@@ -54,7 +54,7 @@ class LineBotCallback extends Controller
 
             switch ($event['message']['type']) {
                 case 'text':
-         	    $mywords = $this->words;
+             	    $mywords = $this->words;
 
                     $rivesay = Rivescript::reply(null, $event['message']['text']);
                     $isay = (rand(0, 1)) ? $mywords[array_rand($mywords, 1)] : '';
@@ -79,7 +79,7 @@ class LineBotCallback extends Controller
             				if ($resptext) {
             					Log::info($resptext->getHTTPStatus() . ': ' . $resptext->getRawBody());
             				}
-            			} elseif ($rep = $this->parseResponse($rivesay)) {
+            		} elseif ($rep = $this->parseResponse($rivesay) and $rep) {
                             $rs = json_decode($rep);
                             switch ($rs->method) {
                                 case 'image':
@@ -95,15 +95,28 @@ class LineBotCallback extends Controller
                                         Log::info($respImage->getHTTPStatus() . ': ' . $respImage->getRawBody());
                                     }
                                     break;
-                                
+
+                                case 'video':
+                                    $originalContentUrl = $rs->originalContentUrl;
+                                    $previewImageUrl = $rs->previewImageUrl;
+
+                                    $VideoMessage = new \LINE\LINEBot\MessageBuilder\VideoMessageBuilder(
+                                    $originalContentUrl, $previewImageUrl);
+
+                                    $respVideo = $bot->replyMessage($replyToken, $VideoMessage);
+
+                                    if ($respVideo) {
+                                        Log::info($respVideo->getHTTPStatus() . ': ' . $respVideo->getRawBody());
+                                    }
+                                    break;
                                 default:
                                     # code...
                                     break;
                             }
-                           
+
                         } else {
                         	$resp = $bot->replyText($replyToken, $rivesay);
-            			}
+            		}
                     } elseif ($isay) {
                         $resp = $bot->replyText($replyToken, $isay);
                     }
@@ -147,23 +160,39 @@ class LineBotCallback extends Controller
     private function parseResponse($str) {
         $r = explode('@@:', $str);
 
-        if (is_array($r)) {
+        if (is_array($r) and isset($r[1])) {
             $json = [];
 
             switch ($r[0]) {
                 case '<rimg>':
                     # code...
+                    if ($r[1]) {
+                        $file = $r[1] . '.jpg';
+                    } else {
+                        $files = Storage::disk('botimages')->files();
+                        $pickedKey = array_rand($files);
+                        $file = $files[$pickedKey];
+                    }
                     $json['method'] = 'image';
-                    $json['pickedImage'] = secure_url('/storage/botimage/' . $r[1] . '.jpg');
-                    $json['pickedImagePreview'] = secure_url('/storage/resized/botimage/240x/' . $r[1] . '.jpg');
+                    $json['pickedImage'] = secure_url('/storage/botimage/' . $file);
+                    $json['pickedImagePreview'] = secure_url('/storage/resized/botimage/240x/' . $file);
 
                     return json_encode($json);
                     break;
-                
+
+                case '<rvideo>':
+                    # code...
+                    $json['method'] = 'video';
+                    $json['originalContentUrl'] = secure_url('/storage/botvideo/' . $r[1] . '.mp4');
+                    $json['previewImageUrl'] = secure_url('/storage/botvideo/' . $r[1] . '.jpg');
+
+                    return json_encode($json);
+                    break;
+
                 default:
                     # code...
                     break;
-            }  
+            }
         }
 
         return false;
