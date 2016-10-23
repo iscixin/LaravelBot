@@ -1,7 +1,7 @@
 
 ## Bot 靜香 v1.0
 
-[![Join the chat at https://gitter.im/cixinlaravelbot/Lobby](https://badges.gitter.im/cixinlaravelbot/Lobby.svg)](https://gitter.im/cixinlaravelbot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/icixin/LaravelBot](https://badges.gitter.im/icixin/LaravelBot.svg)](https://gitter.im/icixin/LaravelBot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 A LineBot for Cixin Upper School Students and Teachers. Based on Laravel 5.3.
 
 ### Installation
